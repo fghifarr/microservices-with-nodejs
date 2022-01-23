@@ -6,10 +6,10 @@ const express = require("express"),
   { createProxyMiddleware } = require('http-proxy-middleware'),
   routes = require('./src/config/routes');
 
-const PORT = process.env.PORT || 1997;
-
 // Configure env
 require('dotenv').config({ debug: process.env.DOTENV_DEBUG == true });
+
+const PORT = process.env.PORT || 1997;
 
 // Initialize application-level middleware(s)
 const app = express();

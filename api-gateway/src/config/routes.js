@@ -1,4 +1,7 @@
-const USER_SERVICE_URL = process.env.USER_SERVICE_URL || `http://127.0.0.1:1998`;
+require("dotenv").config({ debug: process.env.DOTENV_DEBUG == true });
+
+const USER_SERVICE_URL =
+  process.env.USER_SERVICE_URL || `http://127.0.0.1:1998`;
 
 const routes = [
   {
