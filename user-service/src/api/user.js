@@ -3,25 +3,6 @@ const router = require("express").Router(),
   mongoose = require("mongoose"),
   redisManager = require('../cache/redis-manager');
 
-// Router-level middleware
-/**
- * Populates user object from the given id.
- */
-router.param("id", async (req, res, next, userId) => {
-  try {
-    const user = await User.findById(userId).exec();
-    if (!user) {
-      res.sendStatus(404);
-      return;
-    }
-
-    req.user = user;
-    next();
-  } catch (err) {
-    next(err);
-  }
-});
-
 // Route handlers
 /**
  * Lists the users
@@ -38,8 +19,58 @@ router.get("/", redisManager.middleware, async (req, res, next) => {
 /**
  * Gets a user by id
  */
-router.get("/:id", redisManager.middleware, async (req, res) => {
-  res.json(req.user);
+router.get("/:id", redisManager.middleware, async (req, res, next) => {
+  try {
+    const user = await User.findById(req.params.id).exec();
+    if (!user) {
+      res.sendStatus(404);
+      return;
+    }
+
+    res.json(user);
+  } catch (err) {
+    next(err);
+  }
+});
+
+/**
+ * Gets a user by account number
+ */
+router.get(
+    "/acc-number/:accNumber",
+    redisManager.middleware,
+    async (req, res, next) => {
+  try {
+    const user = await User.findOne({ accountNumber: req.params.accNumber }).exec();
+    if (!user) {
+      res.sendStatus(404);
+      return;
+    }
+    
+    res.json(user);
+  } catch (err) {
+    next(err);
+  }
+});
+
+/**
+ * Gets a user by identity number
+ */
+router.get(
+    "/id-number/:idNumber", 
+    redisManager.middleware, 
+    async (req, res, next) => {
+  try {
+    const user = await User.findOne({ identityNumber: req.params.idNumber }).exec();
+    if (!user) {
+      res.sendStatus(404);
+      return;
+    }
+
+    res.json(user);
+  } catch (err) {
+    next(err);
+  }
 });
 
 /**
@@ -73,16 +104,19 @@ router.post("/", async (req, res, next) => {
  */
 router.put("/:id", async (req, res, next) => {
   try {
+    const user = await User.findById(req.params.id).exec();
+    if (!user) {
+      res.sendStatus(404);
+      return;
+    }
+
     const userObj = {
       username: req.body.username,
       accountNumber: req.body.accountNumber,
       emailAddress: req.body.emailAddress,
       identityNumber: req.body.identityNumber,
     };
-    const updatedUser = await User.findByIdAndUpdate(
-      req.user._id,
-      userObj
-    ).exec();
+    const updatedUser = await User.findByIdAndUpdate(user._id, userObj).exec();
     await redisManager.userSync(updatedUser);
 
     res.json(userObj);
@@ -96,8 +130,14 @@ router.put("/:id", async (req, res, next) => {
  */
 router.delete("/:id", async (req, res, next) => {
   try {
-    await User.findByIdAndDelete(req.user._id).exec();
-    await redisManager.removeUser(req.user._id);
+    const user = await User.findById(req.params.id).exec();
+    if (!user) {
+      res.sendStatus(404);
+      return;
+    }
+
+    await User.findByIdAndDelete(user._id).exec();
+    await redisManager.removeUser(user._id);
 
     res.status(200).send("Success!");
   } catch (err) {

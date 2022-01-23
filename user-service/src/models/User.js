@@ -12,6 +12,7 @@ const schema = mongoose.Schema({
     type: String,
     minLength: 5,
     maxLength: 7,
+    unique: true,
   },
   emailAddress: {
     type: String,
@@ -27,6 +28,7 @@ const schema = mongoose.Schema({
     type: String,
     minLength: 5,
     maxLength: 7,
+    unique: true,
   },
 });
 

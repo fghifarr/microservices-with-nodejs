@@ -12,10 +12,10 @@ const redisManager = {
       res.send(jsonData);
       return;
     } else {
-      res.sendResp = res.send;
+      res.sendFn = res.send;
       res.send = (body) => {
-        redisClient.setEx(key, 300, JSON.stringify(body));
-        res.sendResp(body);
+        if (res.statusCode == 200) redisClient.setEx(key, 300, JSON.stringify(body));
+        res.sendFn(body);
       };
       next();
     }
