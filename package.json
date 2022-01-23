@@ -1,0 +1,15 @@
+{
+  "name": "microservices-with-nodejs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Fathullah Ghifar",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^2.0.15",
+    "prettier": "^2.5.1"
+  }
+}
