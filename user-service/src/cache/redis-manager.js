@@ -1,6 +1,7 @@
 const redis = require("redis");
 const REDIS_URL = process.env.REDIS_URL || 'http://127.0.0.1:6379';
 
+//ToDo: Implement asynchronous indexing
 const redisManager = {
   middleware: async (req, res, next) => {
     let key = '/users' + (req.originalUrl || req.url);
@@ -30,7 +31,8 @@ const redisManager = {
   removeUser: async (userId) => {
     const redisClient = redis.createClient({ url: process.env.REDIS_URL });
     await redisClient.connect();
-    redisClient.del(`/users/${userId}`);
+    await redisClient.del(`/users/${userId}`);
+    await redisClient.del(`/users/`);
   },
 };
 
