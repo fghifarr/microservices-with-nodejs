@@ -1,3 +1,5 @@
+const ReqUser = require("../requests/ReqUser");
+
 const router = require("express").Router(),
   User = require("../models/User"),
   mongoose = require("mongoose"),
@@ -16,6 +18,7 @@ router.get("/", redisManager.middleware, async (req, res, next) => {
   }
 });
 
+//ToDo: create its service to handle business logic
 /**
  * Gets a user by id
  */
@@ -78,17 +81,34 @@ router.get(
  */
 router.post("/", async (req, res, next) => {
   try {
-    //check if username exist
-    const total = await User.countDocuments({ username: req.body.username });
-    if (total > 0) {
+    const reqUser = new ReqUser(req.body);
+    reqUser.validate();
+
+    //check on unique fields
+    const totalUsername = await User.countDocuments({
+      username: reqUser.username,
+    });
+    if (totalUsername > 0) {
       res.status(400).send("Username already exists");
+    }
+    const totalAccNo = await User.countDocuments({
+      accountNumber: reqUser.accountNumber,
+    });
+    if (totalAccNo > 0) {
+      res.status(400).send("Account number already exists");
+    }
+    const totalIdNo = await User.countDocuments({
+      identityNumber: reqUser.identityNumber,
+    });
+    if (totalIdNo > 0) {
+      res.status(400).send("Identity number already exists");
     }
 
     const userObj = {
-      username: req.body.username,
-      accountNumber: req.body.accountNumber,
-      emailAddress: req.body.emailAddress,
-      identityNumber: req.body.identityNumber,
+      username: reqUser.username,
+      accountNumber: reqUser.accountNumber,
+      emailAddress: reqUser.emailAddress,
+      identityNumber: reqUser.identityNumber,
     };
     const newUser = await new User(userObj).save();
     await redisManager.userSync(newUser);
@@ -104,6 +124,9 @@ router.post("/", async (req, res, next) => {
  */
 router.put("/:id", async (req, res, next) => {
   try {
+    const reqUser = new ReqUser(req.body);
+    reqUser.validate();
+
     const user = await User.findById(req.params.id).exec();
     if (!user) {
       res.sendStatus(404);
@@ -111,10 +134,10 @@ router.put("/:id", async (req, res, next) => {
     }
 
     const userObj = {
-      username: req.body.username,
-      accountNumber: req.body.accountNumber,
-      emailAddress: req.body.emailAddress,
-      identityNumber: req.body.identityNumber,
+      username: reqUser.username,
+      accountNumber: reqUser.accountNumber,
+      emailAddress: reqUser.emailAddress,
+      identityNumber: reqUser.identityNumber,
     };
     const updatedUser = await User.findByIdAndUpdate(user._id, userObj).exec();
     await redisManager.userSync(updatedUser);
