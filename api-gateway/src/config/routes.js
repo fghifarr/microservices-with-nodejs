@@ -4,6 +4,7 @@ const USER_SERVICE_URL = `http://127.0.0.1:${USER_SERVICE_PORT}`;
 const routes = [
   {
     url: "/users",
+    auth: true,
     rateLimit: {
       windowMs: 15 * 60 * 1000,
       max: 200,

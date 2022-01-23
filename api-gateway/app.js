@@ -16,6 +16,7 @@ const app = express();
 app.use(cors());
 app.use(morgan('combined'));
 routes.forEach((route) => {
+  if (route.auth) app.use(route.url, require('./src/auth/apiKey'));
   app.use(route.url, rateLimit(route.rateLimit));
   app.use(route.url, createProxyMiddleware(route.proxy));
 });
