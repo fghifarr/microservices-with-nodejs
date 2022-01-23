@@ -4,6 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "concurrently \"cd api* && npm start\" \"cd user* && npm start\"",
+    "dev": "concurrently \"cd api* && npm run dev\" \"cd user* && npm run dev\"",
+    "install": "concurrently \"cd api* && npm i\" \"cd user* && npm i\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Fathullah Ghifar",
