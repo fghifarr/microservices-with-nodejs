@@ -1,5 +1,4 @@
-const USER_SERVICE_PORT = process.env.USER_SERVICE_PORT || 1998;
-const USER_SERVICE_URL = `http://127.0.0.1:${USER_SERVICE_PORT}`;
+const USER_SERVICE_URL = process.env.USER_SERVICE_URL || `http://127.0.0.1:1998`;
 
 const routes = [
   {
